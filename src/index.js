@@ -1,16 +1,19 @@
-import Classes from './classes/imports.js';
+import './classes/helpers';
+import Screen from './classes/Screen';
+import Boid from './classes/Boid';
+import Vector from './classes/Vector';
+
 import './main.scss';
 class Index {
     constructor(){
-        window.Classes = Classes;
-        this.screen = new Classes.Screen(window.innerWidth,window.innerHeight);
+        this.screen = new Screen(window.innerWidth,window.innerHeight);
         this.flock = [];
         this.maxFlockSize = 500;
         this.isMouseDown = false;
-        this.mousePos = new Classes.Vector();
+        this.mousePos = new Vector();
 
         for(let i = 0; i < this.maxFlockSize; i++){
-            this.boid = new Classes.Boid(window.random(0, window.innerWidth), window.random(0, window.innerHeight));
+            this.boid = new Boid(window.random(0, window.innerWidth), window.random(0, window.innerHeight), this);
             this.flock.push(this.boid);
         }
     }
@@ -44,7 +47,7 @@ class Index {
 
     update(){
         if(this.isMouseDown){
-            this.boid = new Classes.Boid(this.mousePos.x, this.mousePos.y);
+            this.boid = new Boid(this.mousePos.x, this.mousePos.y, this);
             this.flock.push(this.boid);
 
             if(this.flock.length > this.maxFlockSize){
@@ -64,11 +67,8 @@ class Index {
         this.screen.clear();
 
         this.flock.forEach(boid => {
-            boid.drawHeatmap(this.screen);
-        });
-
-        this.flock.forEach(boid => {
-            boid.draw(this.screen);
+            boid.drawHeatmap();
+            boid.draw();
         });
     }
 }

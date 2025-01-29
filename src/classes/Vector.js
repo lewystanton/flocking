@@ -67,15 +67,11 @@ export default class Vector{
     // ========================================================================
     // STATIC METHODS
     // ========================================================================
-    static sub (v1, v2){
+    static _sub (v1, v2){
         return new Vector(v1.x - v2.x, v1.y - v2.y);
     }
 
-    static mag(vector){
-        return Math.sqrt(vector.x * vector.x + vector.y * vector.y);
-    }
-
-    static random2D(){
+    static _random2D(){
         const angle = Math.random() * Math.PI * 2;
         return new Vector(Math.cos(angle), Math.sin(angle));
     }

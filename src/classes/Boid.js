@@ -1,8 +1,10 @@
+import Vector from "./Vector";
 export default class Boid {
-    constructor(x, y) {
-        this.position = new Classes.Vector(x, y);
-        this.velocity = Classes.Vector.random2D();
-        this.acceleration = new Classes.Vector();
+    constructor(x, y, _game) {
+        this._game = _game;
+        this.position = new Vector(x, y);
+        this.velocity = Vector._random2D();
+        this.acceleration = new Vector();
         this.maxSpeed = 4;
 
         this.maxAlignmentForce = 1;
@@ -51,7 +53,7 @@ export default class Boid {
     }
 
     alignment() {
-        let steering = new Classes.Vector();
+        let steering = new Vector();
         let total = 0;
 
         for (let boid of this.neighbours) {
@@ -70,7 +72,7 @@ export default class Boid {
     }
 
     cohesion() {
-        let steering = new Classes.Vector();
+        let steering = new Vector();
         let total = 0;
 
         for (let boid of this.neighbours) {
@@ -90,11 +92,11 @@ export default class Boid {
     }
 
     separation() {
-        let steering = new Classes.Vector();
+        let steering = new Vector();
         let total = 0;
 
         for (let boid of this.neighbours) {
-            let diff = Classes.Vector.sub(this.position, boid.position);
+            let diff = Vector._sub(this.position, boid.position);
             diff.div(this.position.dist(boid.position));
             steering.add(diff);
             total++;
@@ -117,38 +119,38 @@ export default class Boid {
         return dx * dx + dy * dy;
     }
 
-    wrapEdges(screen){
-        if (this.position.x < 0) this.position.x = screen.width;
+    wrapEdges(){
+        if (this.position.x < 0) this.position.x = this._game.screen.width;
         if (this.position.x > screen.width) this.position.x = 0;
 
         if (this.position.y < 0) this.position.y = screen.height;
         if (this.position.y > screen.height) this.position.y = 0;
     }
 
-    update(screen) {
+    update() {
         this.position.add(this.velocity)
         this.velocity.add(this.acceleration);
         this.velocity.limit(this.maxSpeed);
         this.acceleration.mult(0);
-        this.wrapEdges(screen);
+        this.wrapEdges();
     }
 
-    drawHeatmap(screen) {
+    drawHeatmap() {
         if(this.heatmap){
-            screen.circle(this.position.x, this.position.y, this.perception / 2, this.heatmapBackground);
-            //screen.strokeCircle(this.position.x, this.position.y, this.perception / 2, this.heatmapStroke, 1);
+            //this._game.screen.circle(this.position.x, this.position.y, this.perception / 2, this.heatmapBackground);
+            //this._game.screen.strokeCircle(this.position.x, this.position.y, this.perception / 2, this.heatmapStroke, 1);
 
             for (let boid of this.neighbours) {
                 const d = this.checkDistance(this.position, boid.position);
 
                 if (d < (this.perception * this.perception)) {
-                    screen.line(this.position.x, this.position.y, boid.position.x, boid.position.y, this.heatmapStroke, 1);
+                    this._game.screen.line(this.position.x, this.position.y, boid.position.x, boid.position.y, this.heatmapStroke, 1);
                 }
             }
         }
     }
 
-    draw(screen) {
-        screen.circle(this.position.x, this.position.y, this.radius, '#ffffff');
+    draw() {
+        this._game.screen.circle(this.position.x, this.position.y, this.radius, '#ffffff');
     }
 }
