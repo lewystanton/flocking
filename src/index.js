@@ -14,7 +14,7 @@ class Index {
         this.quadtree = new Quadtree(this.boundary, 10, this);
 
         this.flock = [];
-        this.maxFlockSize = 500;
+        this.maxFlockSize = 50;
         this.isMouseDown = false;
         this.mousePos = new Vector();
 
