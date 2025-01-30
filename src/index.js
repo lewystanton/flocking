@@ -92,8 +92,8 @@ class Index {
     update(delta) {
         if(this.selfOptimise){
             if (this.currentFps < this.targetFPS - 10) {
-                const lastBoid = this.flock[this.flock.length - 1];
-                this.flock.splice(this.flock.indexOf(lastBoid), 1);
+                const firstBoid = this.flock[0];
+                this.flock.splice(this.flock.indexOf(firstBoid), 1);
             } else {
                 this.flock.push(new Boid(window.random(0, window.innerWidth), window.random(0, window.innerHeight), this));
             }
