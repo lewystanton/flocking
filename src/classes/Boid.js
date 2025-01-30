@@ -1,4 +1,5 @@
 import Vector from "./Vector";
+import Boundary from "./Boundary";
 export default class Boid {
     constructor(x, y, _game) {
         this._game = _game;
@@ -19,6 +20,8 @@ export default class Boid {
         this.flock = [];
         this.neighbours = [];
 
+        this.highlight = false;
+
         this.heatmap = true;
         this.heatmapStroke = '#ED4C67';
         this.heatmapRGB = [
@@ -30,17 +33,15 @@ export default class Boid {
     }
 
     doFlocking(flock) {
-        this.flock = flock;
+        const boundary = new Boundary(this.position.x - (this.perception / 2), this.position.y - (this.perception / 2), this.perception, this.perception, this._game);
+        const nearest = this._game.quadtree.query(boundary);
+
         this.neighbours = [];
 
-        for (let boid of this.flock) {
+        for (let boid of nearest) {
             if (boid === this) continue;
 
-            const d = this.checkDistance(this.position, boid.position);
-
-            if (d < (this.perception * this.perception)) {
-                this.neighbours.push(boid);
-            }
+            this.neighbours.push(boid);
         }
 
         let a = this.alignment();
@@ -106,7 +107,7 @@ export default class Boid {
             steering.div(total);
             steering.setMag(this.maxSpeed);
             steering.sub(this.velocity);
-            steering.limit(this.maxSeparationForce);
+            steering.limit(this.maxSeparationForce + 0.05);
         }
 
         return steering;
@@ -120,24 +121,34 @@ export default class Boid {
     }
 
     wrapEdges(){
-        if (this.position.x < 0) this.position.x = this._game.screen.width;
-        if (this.position.x > screen.width) this.position.x = 0;
+        if(this.position.x > this._game.screen.width){
+            this.position.x = 0;
+        } else if(this.position.x < 0){
+            this.position.x = this._game.screen.width;
+        }
 
-        if (this.position.y < 0) this.position.y = screen.height;
-        if (this.position.y > screen.height) this.position.y = 0;
+        if(this.position.y > this._game.screen.height){
+            this.position.y = 0;
+        } else if(this.position.y < 0){
+            this.position.y = this._game.screen.height;
+        }
     }
 
     update() {
-        this.position.add(this.velocity)
+        this.position.add(this.velocity);
         this.velocity.add(this.acceleration);
         this.velocity.limit(this.maxSpeed);
         this.acceleration.mult(0);
+
+        this.velocity.x = this.velocity.x * this._game.deltaScale;
+        this.velocity.y = this.velocity.y * this._game.deltaScale;
+
         this.wrapEdges();
     }
 
     drawHeatmap() {
         if(this.heatmap){
-            //this._game.screen.circle(this.position.x, this.position.y, this.perception / 2, this.heatmapBackground);
+            this._game.screen.circle(this.position.x, this.position.y, this.perception / 2, this.heatmapBackground);
             //this._game.screen.strokeCircle(this.position.x, this.position.y, this.perception / 2, this.heatmapStroke, 1);
 
             for (let boid of this.neighbours) {
@@ -151,6 +162,7 @@ export default class Boid {
     }
 
     draw() {
-        this._game.screen.circle(this.position.x, this.position.y, this.radius, '#ffffff');
+        const color = this.highlight ? '#ff0000' : '#ffffff';
+        //this._game.screen.circle(this.position.x, this.position.y, this.radius, color);
     }
 }

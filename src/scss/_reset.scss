@@ -58,3 +58,19 @@ body{
   display: block;
   overflow: hidden;
 }
+
+#fps{
+  position: fixed;
+  color: lime;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 99;
+}
+
+#flock{
+    position: fixed;
+    color: yellow;
+    bottom: 2rem;
+    left: 2rem;
+    z-index: 99;
+}
