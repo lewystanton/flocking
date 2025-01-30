@@ -93,7 +93,7 @@ class Index {
         }
     }
 
-    update() {
+    update(delta) {
         if(this.selfOptimise){
             if (this.currentFps < this.targetFPS - 10) {
                 const lastBoid = this.flock[this.flock.length - 1];
@@ -106,15 +106,10 @@ class Index {
         if (this.isMouseDown) {
             this.boid = new Boid(this.mousePos.x, this.mousePos.y, this);
             this.flock.push(this.boid);
-
-            if (this.flock.length > this.maxFlockSize) {
-                this.flock.shift();
-            }
         }
 
         this.flock.forEach(boid => {
-            boid.doFlocking(this.flock);
-            boid.update(this.screen);
+            boid.update(delta);
         });
 
         this.quadtree.clear();

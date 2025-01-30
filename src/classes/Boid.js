@@ -10,7 +10,7 @@ export default class Boid {
 
         this.maxAlignmentForce = 1;
         this.maxCohesionForce = 1;
-        this.maxSeparationForce = 1.05;
+        this.maxSeparationForce = 1;
 
         this.radius = 2;
         this.perception = 100;
@@ -30,7 +30,7 @@ export default class Boid {
         this.heatmapBackground = `rgba(${this.heatmapRGB[0]}, ${this.heatmapRGB[1]}, ${this.heatmapRGB[2]}, 0.05)`;
     }
 
-    doFlocking(flock) {
+    doFlocking(delta) {
         const boundary = new Boundary(this.position.x - (this.perception / 2), this.position.y - (this.perception / 2), this.perception, this.perception, this._game);
         const nearest = this._game.quadtree.query(boundary);
 
@@ -105,7 +105,7 @@ export default class Boid {
             steering.div(total);
             steering.setMag(this.maxSpeed);
             steering.sub(this.velocity);
-            steering.limit(this.maxSeparationForce + 0.05);
+            steering.limit(this.maxSeparationForce);
         }
 
         return steering;
@@ -132,14 +132,13 @@ export default class Boid {
         }
     }
 
-    update() {
-        this.position.add(this.velocity);
+    update(delta) {
+        this.doFlocking(delta);
         this.velocity.add(this.acceleration);
+        this.position.add(this.velocity);
+
         this.velocity.limit(this.maxSpeed);
         this.acceleration.mult(0);
-
-        this.velocity.x = this.velocity.x * this._game.deltaScale;
-        this.velocity.y = this.velocity.y * this._game.deltaScale;
 
         this.wrapEdges();
     }
