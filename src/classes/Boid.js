@@ -17,9 +17,7 @@ export default class Boid {
 
         this.velocity.mult(this.maxSpeed);
 
-        this.flock = [];
         this.neighbours = [];
-
         this.highlight = false;
 
         this.heatmap = true;
@@ -163,6 +161,6 @@ export default class Boid {
 
     draw() {
         const color = this.highlight ? '#ff0000' : '#ffffff';
-        //this._game.screen.circle(this.position.x, this.position.y, this.radius, color);
+        this._game.screen.circle(this.position.x, this.position.y, this.radius, color);
     }
 }

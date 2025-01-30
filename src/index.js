@@ -22,11 +22,13 @@ class Index {
         this.targetFPS = 60;
         this.frameTimes = [];
         this.currentFps = 0;
-        this.frameInterval = 1000 / this.targetFPS;
+        this.lastTime = performance.now();
         this.lastTimestamp = performance.now();
         this.delta = 0;
         this.deltaScale = 0;
+        this.frameCount = 0;
         this.averageFps = this.targetFPS;
+        this.currentFps = 0;
 
         for (let i = 0; i < this.maxFlockSize; i++) {
             this.boid = new Boid(window.random(0, window.innerWidth), window.random(0, window.innerHeight), this);
@@ -52,25 +54,37 @@ class Index {
     }
 
     loop() {
-        if (this.looping) {
-            requestAnimationFrame(() => this.loop());
-        }
+        requestAnimationFrame(() => this.loop());
 
         const now = performance.now();
         const frameTime = now - this.lastTimestamp;
-
         this.delta = frameTime / 1000;
 
-        if (frameTime >= this.frameInterval) {
+        // Use a fixed timestep approach
+        const targetInterval = 1000 / this.targetFPS;
+
+        if (frameTime >= targetInterval) {
             this.deltaScale = this.delta * this.targetFPS;
-            this.lastTimestamp = now - (frameTime % this.frameInterval);
+            this.lastTimestamp = now - (frameTime % targetInterval);
+
+            // Update frame count for FPS calculation
+
+            this.frameCount++;
+
+            this.lastTime = now;
+            this.currentFps = 1000 / frameTime;
+
+            if (this.frameTimes.length > this.targetFPS * 2) {
+                this.frameTimes.shift();
+            }
 
             this.update(this.delta);
             this.draw();
 
-            this.currentFps = 1000 / frameTime;
+            this.frameTimes.push(this.currentFps);
+            this.averageFps = this.frameTimes.reduce((a, b) => a + b) / this.frameTimes.length;
 
-            document.getElementById('fps').innerText = `FPS: ${Math.round(this.currentFps)}`;
+            document.getElementById('fps').innerText = `Current FPS: ${Math.round(this.currentFps)} | Average FPS: ${Math.round(this.averageFps)}`;
             document.getElementById('flock').innerText = `Flock Size: ${this.flock.length}`;
         }
     }
