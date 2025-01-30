@@ -18,7 +18,6 @@ class Index {
         this.isMouseDown = false;
         this.mousePos = new Vector();
 
-        this.looping = true;
         this.targetFPS = 60;
         this.frameTimes = [];
         this.currentFps = 0;
@@ -29,6 +28,8 @@ class Index {
         this.frameCount = 0;
         this.averageFps = this.targetFPS;
         this.currentFps = 0;
+
+        this.selfOptimise = false;
 
         for (let i = 0; i < this.maxFlockSize; i++) {
             this.boid = new Boid(window.random(0, window.innerWidth), window.random(0, window.innerHeight), this);
@@ -71,8 +72,11 @@ class Index {
 
             this.frameCount++;
 
-            this.lastTime = now;
-            this.currentFps = 1000 / frameTime;
+            if (now - this.lastTime >= 1000) {
+                this.currentFps = this.frameCount;
+                this.frameCount = 0;
+                this.lastTime = now;
+            }
 
             if (this.frameTimes.length > this.targetFPS * 2) {
                 this.frameTimes.shift();
@@ -90,11 +94,13 @@ class Index {
     }
 
     update() {
-        if (this.currentFps < this.targetFPS - 10) {
-            const lastBoid = this.flock[this.flock.length - 1];
-            this.flock.splice(this.flock.indexOf(lastBoid), 1);
-        } else {
-            this.flock.push(new Boid(window.random(0, window.innerWidth), window.random(0, window.innerHeight), this));
+        if(this.selfOptimise){
+            if (this.currentFps < this.targetFPS - 10) {
+                const lastBoid = this.flock[this.flock.length - 1];
+                this.flock.splice(this.flock.indexOf(lastBoid), 1);
+            } else {
+                this.flock.push(new Boid(window.random(0, window.innerWidth), window.random(0, window.innerHeight), this));
+            }
         }
 
         if (this.isMouseDown) {
