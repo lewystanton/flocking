@@ -10,7 +10,7 @@ export default class Boid {
 
         this.maxAlignmentForce = 1;
         this.maxCohesionForce = 1;
-        this.maxSeparationForce = 1;
+        this.maxSeparationForce = 1.15;
 
         this.radius = 2;
         this.perception = 100;

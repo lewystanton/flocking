@@ -24,12 +24,11 @@ class Index {
         this.lastTime = performance.now();
         this.lastTimestamp = performance.now();
         this.delta = 0;
-        this.deltaScale = 0;
         this.frameCount = 0;
         this.averageFps = this.targetFPS;
         this.currentFps = 0;
 
-        this.selfOptimise = false;
+        this.selfOptimise = true;
 
         for (let i = 0; i < this.maxFlockSize; i++) {
             this.boid = new Boid(window.random(0, window.innerWidth), window.random(0, window.innerHeight), this);
@@ -61,14 +60,11 @@ class Index {
         const frameTime = now - this.lastTimestamp;
         this.delta = frameTime / 1000;
 
-        // Use a fixed timestep approach
         const targetInterval = 1000 / this.targetFPS;
 
         if (frameTime >= targetInterval) {
             this.deltaScale = this.delta * this.targetFPS;
             this.lastTimestamp = now - (frameTime % targetInterval);
-
-            // Update frame count for FPS calculation
 
             this.frameCount++;
 
